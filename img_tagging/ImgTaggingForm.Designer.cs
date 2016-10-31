@@ -1,6 +1,6 @@
 ﻿namespace img_tagging
 {
-    partial class Form1
+    partial class ImgTaggingForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,12 +28,34 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.btnTry = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
+            // btnTry
+            // 
+            this.btnTry.Location = new System.Drawing.Point(12, 227);
+            this.btnTry.Name = "btnTry";
+            this.btnTry.Size = new System.Drawing.Size(75, 23);
+            this.btnTry.TabIndex = 0;
+            this.btnTry.Text = "Try";
+            this.btnTry.UseVisualStyleBackColor = true;
+            this.btnTry.Click += new System.EventHandler(this.btnTry_Click);
+            // 
+            // ImgTaggingForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(284, 262);
+            this.Controls.Add(this.btnTry);
+            this.Name = "ImgTaggingForm";
+            this.Text = "Image tagging";
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.Button btnTry;
     }
 }
 
