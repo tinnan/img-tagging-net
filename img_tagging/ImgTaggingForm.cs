@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
 using System.IO;
+using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace img_tagging
 {
@@ -23,6 +25,11 @@ namespace img_tagging
         private const string ARCHIVE_DIR = "archive";
         // Tags library file, stores tags and their members.
         private const string TAGS_LIBRARY_FILE = "tags.json";
+        // Rexeg pattern to detect image file.
+        // JPG, PNG files.
+        private const string IMG_FILE_PATTERN = "(.*)(\\.(jpg|png))$";
+        // Instance var for tags library file.
+        private Tags taglib_ = null;
 
         private void btnTag_Click(object sender, EventArgs e)
         {
@@ -62,29 +69,86 @@ namespace img_tagging
 
         private void tag(string rootPath)
         {
+            // check selected path first.
+            if(string.IsNullOrEmpty(rootPath))
+            {
+                MessageBox.Show("Please select a folder first.");
+                return;
+            }
+
             // List all directory found in the rootPath except for ARCHIVE_DIR.
             var dirs = Directory.GetDirectories(rootPath).Where(d => Path.GetFileName(d) != ARCHIVE_DIR);
-            // Clear the task logs.
-            txtTaskLogs.Clear();
-            // Clear the progress bar.
-            tagProgress.Value = 0;
+            start();
 
             if(dirs.ToArray().Length == 0)
             {
                 // No directory is found!
                 log("Not found directory.");
-                return; // End this process.
+            } else
+            {
+                log("Found some directory. Process to tagging process...");
+
+                loadTagLib(rootPath);
+
+                int task_count = dirs.ToArray().Length;
+                int task_done = 0;
+
+                foreach (string d in dirs)
+                {
+                    tagdir(d);
+
+                    task_done++; // Increase task_done count.
+                    updateTaskProgressBar(task_done, task_count);
+                }
             }
 
-            int task_count = dirs.ToArray().Length;
-            int task_done = 0;
+            end();
+        }
 
-            foreach(string d in dirs)
+        private void start()
+        {
+            // Clear the task logs.
+            txtTaskLogs.Clear();
+            // Clear the progress bar.
+            tagProgress.Value = 0;
+            // Disable all buttons.
+            btnBrowse.Enabled = false;
+            btnTag.Enabled = false;
+        }
+
+        private void end()
+        {
+            // Enable buttons.
+            btnBrowse.Enabled = true;
+            btnTag.Enabled = true;
+        }
+
+        private void loadTagLib(string rootPath)
+        {
+            log("Look for a tag library file (tags.json).");
+
+            string file = rootPath + "\\" + TAGS_LIBRARY_FILE;
+            if (File.Exists(file))
             {
-                tagdir(d);
+                log("Found it, try to load to list.");
 
-                task_done++; // Increase task_done count.
-                updateTaskProgressBar(task_done, task_count);
+                using (StreamReader reader = new StreamReader(file))
+                {
+                    string json = reader.ReadToEnd();
+                    taglib_ = new Tags(JsonConvert.DeserializeObject<List<Tag>>(json));
+
+                    log("Loading success.");
+
+                    if(taglib_.Count() == 0)
+                    {
+                        log("It seems tag library file is empty.");
+                    }
+                }
+                
+            } else
+            {
+                log("Not found any tag library file.");
+                taglib_ = new Tags(null);
             }
         }
 
@@ -102,10 +166,33 @@ namespace img_tagging
             tagProgress.Value = (done / all) * 100;
         }
 
+        private bool IsAnImageFile(string filename)
+        {
+            return Regex.Match(filename, IMG_FILE_PATTERN).Success;
+        }
+
         private void tagdir(string path)
         {
             log("Tagging images in directory: " + path);
 
+            // 1. List all image files.
+            var imgs = Directory.GetFiles(path).Where(f => IsAnImageFile(Path.GetFileName(f)));
+
+            if(imgs.ToArray().Length == 0)
+            {
+                log("Not found any image file.");
+            } else
+            {
+                foreach (string i in imgs)
+                {
+                    string fname = Path.GetFileName(i);
+                    log("Image file: " + fname);
+
+
+                }
+            }
+
+            
         }
     }
 }
