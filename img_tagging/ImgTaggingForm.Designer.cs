@@ -32,9 +32,9 @@
             this.txtPath = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.grpProgress = new System.Windows.Forms.GroupBox();
+            this.txtTaskLogs = new System.Windows.Forms.TextBox();
             this.tagProgress = new System.Windows.Forms.ProgressBar();
             this.pathBrowseDialog = new System.Windows.Forms.FolderBrowserDialog();
-            this.txtTaskLogs = new System.Windows.Forms.TextBox();
             this.grpProgress.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -58,7 +58,7 @@
             // 
             // btnBrowse
             // 
-            this.btnBrowse.Location = new System.Drawing.Point(418, 11);
+            this.btnBrowse.Location = new System.Drawing.Point(418, 12);
             this.btnBrowse.Name = "btnBrowse";
             this.btnBrowse.Size = new System.Drawing.Size(75, 22);
             this.btnBrowse.TabIndex = 2;
@@ -77,6 +77,15 @@
             this.grpProgress.TabStop = false;
             this.grpProgress.Text = "Progress";
             // 
+            // txtTaskLogs
+            // 
+            this.txtTaskLogs.Location = new System.Drawing.Point(7, 50);
+            this.txtTaskLogs.Multiline = true;
+            this.txtTaskLogs.Name = "txtTaskLogs";
+            this.txtTaskLogs.ReadOnly = true;
+            this.txtTaskLogs.Size = new System.Drawing.Size(651, 304);
+            this.txtTaskLogs.TabIndex = 1;
+            // 
             // tagProgress
             // 
             this.tagProgress.Location = new System.Drawing.Point(7, 20);
@@ -90,15 +99,6 @@
             this.pathBrowseDialog.RootFolder = System.Environment.SpecialFolder.MyComputer;
             this.pathBrowseDialog.ShowNewFolderButton = false;
             this.pathBrowseDialog.HelpRequest += new System.EventHandler(this.pathBrowseDialog_HelpRequest);
-            // 
-            // txtTaskLogs
-            // 
-            this.txtTaskLogs.Location = new System.Drawing.Point(7, 50);
-            this.txtTaskLogs.Multiline = true;
-            this.txtTaskLogs.Name = "txtTaskLogs";
-            this.txtTaskLogs.ReadOnly = true;
-            this.txtTaskLogs.Size = new System.Drawing.Size(651, 304);
-            this.txtTaskLogs.TabIndex = 1;
             // 
             // ImgTaggingForm
             // 

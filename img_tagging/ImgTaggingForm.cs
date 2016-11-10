@@ -6,6 +6,10 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using img_tagging.tag;
+using img_tagging.tag.converter;
+using System.Collections.Generic;
+using Microsoft.WindowsAPICodePack.Shell.PropertySystem;
+using System.IO.Compression;
 
 namespace img_tagging
 {
@@ -23,26 +27,11 @@ namespace img_tagging
         // Rexeg pattern to detect image file.
         // JPG, PNG files.
         private const string IMG_FILE_PATTERN = "(.*)(\\.(jpg|png))$";
-        // Instance var for tags library file.
-        private Tags taglib_ = null;
+        // Pattern to detect actress name tags.
+        private const string ACT_NAME_PATTERN = "^'.*'$";
 
         private void btnTag_Click(object sender, EventArgs e)
         {
-            //string[] tags = new string[3] { "Good", "Bad", "Nah" };
-            //// read file.
-            //var shellobj = Microsoft.WindowsAPICodePack.Shell.ShellObject.FromParsingName("C:\\Users\\ntin\\Pictures\\nishi\\tumblr_adventure_1280.jpg");
-            //// print Tags property to file.
-            //foreach (string tag in shellobj.Properties.System.Keywords.Value)
-            //{
-            //    Console.WriteLine(tag);
-            //}
-            //// get writer of the property.
-            //ShellPropertyWriter w = shellobj.Properties.GetPropertyWriter();
-            //// write new value of the property.
-            //w.WriteProperty(SystemProperties.System.Keywords, tags);
-            //// close the writer.
-            //w.Close();
-
             tag(txtPath.Text);
         }
 
@@ -73,34 +62,39 @@ namespace img_tagging
 
             // List all directory found in the rootPath except for ARCHIVE_DIR.
             var dirs = Directory.GetDirectories(rootPath).Where(d => Path.GetFileName(d) != ARCHIVE_DIR);
-            start();
+            Start();
 
             if(dirs.ToArray().Length == 0)
             {
                 // No directory is found!
-                log("Not found directory.");
+                Log("Not found directory.");
             } else
             {
-                log("Found some directory. Process to tagging process...");
+                Log("Found some directory. Proceed to tagging process...");
 
-                loadTagLib(rootPath);
+                Tags taglib = LoadTagLib(rootPath);
 
                 int task_count = dirs.ToArray().Length;
                 int task_done = 0;
 
                 foreach (string d in dirs)
                 {
-                    tagdir(d);
+                    tagdir(d, taglib);
 
                     task_done++; // Increase task_done count.
                     updateTaskProgressBar(task_done, task_count);
                 }
+
+                // Write to taglib file.
+                WriteTagLib(taglib, rootPath);
+
+                Log("Job completed!");
             }
 
-            end();
+            End();
         }
 
-        private void start()
+        private void Start()
         {
             // Clear the task logs.
             txtTaskLogs.Clear();
@@ -111,43 +105,50 @@ namespace img_tagging
             btnTag.Enabled = false;
         }
 
-        private void end()
+        private void End()
         {
             // Enable buttons.
             btnBrowse.Enabled = true;
             btnTag.Enabled = true;
         }
 
-        private void loadTagLib(string rootPath)
+        private void WriteTagLib(Tags taglib, string rootPath)
         {
-            log("Look for a tag library file (tags.json).");
+            Log("Writing tags.json file.");
 
-            string file = rootPath + "\\" + TAGS_LIBRARY_FILE;
+            string json = JsonConvert.SerializeObject(taglib);
+            File.WriteAllText(Path.Combine(rootPath, TAGS_LIBRARY_FILE), json);
+        }
+
+        private Tags LoadTagLib(string rootPath)
+        {
+            Log("Look for a tag library file (tags.json).");
+
+            Tags taglib;
+
+            string file = Path.Combine(rootPath, TAGS_LIBRARY_FILE);
             if (File.Exists(file))
             {
-                log("Found it, try to load to list.");
+                Log("Found it, try to load to list.");
 
                 using (StreamReader reader = new StreamReader(file))
                 {
                     string json = reader.ReadToEnd();
-                    taglib_ = JsonConvert.DeserializeObject<Tags>(json);
+                    taglib = JsonConvert.DeserializeObject<Tags>(json, new TagsConverter());
 
-                    log("Loading success.");
-
-                    if(taglib_.Count() == 0)
-                    {
-                        log("It seems tag library file is empty.");
-                    }
+                    Log("Loading success.");
                 }
                 
             } else
             {
-                log("Not found any tag library file.");
-                taglib_ = new Tags();
+                Log("Not found any tag library file.");
+                taglib = new Tags();
             }
+
+            return taglib;
         }
 
-        private void log(string msg)
+        private void Log(string msg)
         {
             if (txtTaskLogs.Text.Length != 0)
             {
@@ -166,28 +167,110 @@ namespace img_tagging
             return Regex.Match(filename, IMG_FILE_PATTERN).Success;
         }
 
-        private void tagdir(string path)
+        private void tagdir(string path, Tags taglib)
         {
-            log("Tagging images in directory: " + path);
+            Log("Tagging images in directory: " + path);
+
+            // Directory name.
+            string dir = Path.GetFileName(path);
 
             // 1. List all image files.
             var imgs = Directory.GetFiles(path).Where(f => IsAnImageFile(Path.GetFileName(f)));
 
-            if(imgs.ToArray().Length == 0)
+            if(imgs.Count() == 0)
             {
-                log("Not found any image file.");
-            } else
-            {
-                foreach (string i in imgs)
-                {
-                    string fname = Path.GetFileName(i);
-                    log("Image file: " + fname);
-
-
-                }
+                Log("Not found any image file.");
+                return;
             }
 
+            // 2. Derive tags from directory name.
+            string[] tags = DeriveTagList(dir);
+            // 3. Add site tag to tag lib.
+            taglib.AddSite(tags[0]); // first tag is always a Site.
+            // 4. Add actress tag to tag lib.
+            foreach(string a in tags.ToList<string>()
+                .Where(t => { return Regex.Match(t, ACT_NAME_PATTERN).Success; })) // filter only tags that start and end with a songle quote
+                                                                           // a.k.a. Actress name.
+            {
+                string ac = a.Replace("'", ""); // remove leading and trailing single quotes.
+                taglib.AddActress(ac);
+            }
+
+            string[] refinedtags = RefineTagList(tags); // refine the tags. 
+
+            IList<string> imgnames = new List<string>(imgs.Count());
+            // 5. Write extended properties to files.
+            foreach(string fpath in imgs)
+            {
+                WriteTagsToFile(fpath, refinedtags);
+                // Collect file name to new list.
+                string fname = Path.GetFileName(fpath);
+                imgnames.Add(fname);
+            }
             
+            // 6. Add all image file names as member of every tags.
+            foreach(string tagname in refinedtags)
+            {
+                Tag tag = taglib.GetOrCreateTag(tagname);
+                tag.AddMembers(imgnames.ToArray());
+            }
+
+            // 7. Copy all files to parent directory.
+            CopyImgFilesToParent(path, imgs.ToArray());
+
+            // 8. Archive this image directory.
+            ArchiveDirectory(path);
+        }
+
+        private string[] DeriveTagList(string dir)
+        {
+            return dir.Split(' '); // split dir name with space char.
+        }
+
+        private string[] RefineTagList(string[] tags)
+        {
+            for(int i = 0; i < tags.Length; i++)
+            {
+                tags[i] = tags[i].Replace("'", ""); 
+            }
+            return tags;
+        }
+
+        private void WriteTagsToFile(string fpath, string[] tags)
+        {
+            Log("Writing tags to file: " + Path.GetFileName(fpath));
+            // read file.
+            var shellobj = Microsoft.WindowsAPICodePack.Shell.ShellObject.FromParsingName(fpath);
+            using (ShellPropertyWriter w = shellobj.Properties.GetPropertyWriter()) // get writer of the property.
+            {
+                // write new value of the property.
+                w.WriteProperty(SystemProperties.System.Keywords, tags);
+            }
+        }
+
+        private void CopyImgFilesToParent(string path, string[] imgs)
+        {
+            string parentpath = Path.GetDirectoryName(path); // get parent dir path.
+            foreach (string i in imgs)
+            {
+                string fname = Path.GetFileName(i);
+                File.Copy(i, Path.Combine(parentpath, fname), true); // copy with overwrite option.
+            }
+        }
+
+        private void ArchiveDirectory(string path)
+        {
+            string parentpath = Path.GetDirectoryName(path); // get parent dir path.
+            string arch_dir = Path.Combine(parentpath, ARCHIVE_DIR);
+            if (!Directory.Exists(arch_dir))
+            {
+                Directory.CreateDirectory(arch_dir);
+            }
+            
+            string dname = Path.GetFileName(path); // get this image directory name.
+            ZipFile.CreateFromDirectory(path, Path.Combine(arch_dir, dname + ".zip")); // create archive file
+                                                                                                      // in ARCHIVE_DIR.                                    
+            Directory.Delete(path, true); // delete the directory.
         }
     }
 }
