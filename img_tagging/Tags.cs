@@ -11,7 +11,7 @@ namespace img_tagging
         
         public List<string> Sites { set; get; }
         public List<string> Actresses { set; get; }
-        public List<Tag> Tagslist
+        public List<Tag> Taglist
         {
             set
             {

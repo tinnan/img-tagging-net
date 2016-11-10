@@ -135,7 +135,7 @@ namespace img_tagging
                 using (StreamReader reader = new StreamReader(file))
                 {
                     string json = reader.ReadToEnd();
-                    taglib_ = new Tags(JsonConvert.DeserializeObject<List<Tag>>(json));
+                    taglib_ = JsonConvert.DeserializeObject<Tags>(json);
 
                     log("Loading success.");
 
@@ -148,7 +148,7 @@ namespace img_tagging
             } else
             {
                 log("Not found any tag library file.");
-                taglib_ = new Tags(null);
+                taglib_ = new Tags();
             }
         }
 
