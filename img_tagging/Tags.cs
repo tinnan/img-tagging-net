@@ -17,7 +17,6 @@ namespace img_tagging
             {
                 if (value != null)
                 {
-                    this.tags_ = new Dictionary<string, Tag>();
                     value.ForEach(e =>
                     {
                         this.tags_.Add(e.Name, e);
@@ -31,7 +30,7 @@ namespace img_tagging
             }
         }
 
-        private Dictionary<string, Tag> tags_;
+        private Dictionary<string, Tag> tags_ = new Dictionary<string, Tag>(0);
 
         public int Count()
         {
