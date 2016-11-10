@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace img_tagging
+namespace img_tagging.tag
 {
     class Tag
     {
