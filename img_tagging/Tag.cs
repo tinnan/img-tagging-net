@@ -5,9 +5,31 @@ namespace img_tagging.tag
 {
     class Tag
     {
+        public Tag()
+        {
+            // default.
+        }
+
+        public Tag(string name)
+        {
+            Name = name;
+        }
+
         public string Name { get; set; }
         public string Description { get; set; }
-        public List<string> Members { get; set; }
+        public HashSet<string> Members { get; set; }
+
+        public void AddMembers(params string[] members)
+        {
+            if(Members == null)
+            {
+                Members = new HashSet<string>();
+            }
+            foreach(string m in members)
+            {
+                Members.Add(m);
+            }
+        }
 
         public override string ToString()
         {
@@ -19,7 +41,7 @@ namespace img_tagging.tag
             if(Members != null)
             {
                 s.Append("Members: [ ")
-                    .Append(string.Join(", ", Members.ToArray()))
+                    .Append(string.Join(", ", Members))
                     .AppendLine(" ]");
             }
             return s.ToString();
