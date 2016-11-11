@@ -28,6 +28,7 @@ namespace img_tagging
         // JPG, PNG files.
         private const string IMG_FILE_PATTERN = "(.*)(\\.(jpg|png))$";
         // Pattern to detect actress name tags.
+        // starts and ends with single quote.
         private const string ACT_NAME_PATTERN = "^'.*'$";
 
         private void btnTag_Click(object sender, EventArgs e)
