@@ -3,7 +3,7 @@ using System.Text;
 
 namespace img_tagging.tag
 {
-    class Tag
+    public class Tag
     {
         public Tag()
         {

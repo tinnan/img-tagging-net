@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace img_tagging.tag.converter
 {
-    class TagsConverter : JsonConverter
+    public class TagsConverter : JsonConverter
     {
         private const string F_SITES = "Sites";
         private const string F_ACT = "Actresses";

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace img_tagging.tag
 {
-    class Tags
+    public class Tags
     {
         public Tags()
         {
