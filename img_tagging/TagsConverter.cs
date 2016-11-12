@@ -55,6 +55,14 @@ namespace img_tagging.tag.converter
             throw new NotImplementedException();
         }
 
+        public override bool CanWrite
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         private bool FieldExists(string field, JObject jo)
         {
             return jo[field] != null;
