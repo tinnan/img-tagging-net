@@ -32,8 +32,8 @@
             this.txtPath = new System.Windows.Forms.TextBox();
             this.btnBrowse = new System.Windows.Forms.Button();
             this.grpProgress = new System.Windows.Forms.GroupBox();
+            this.txtProgress = new System.Windows.Forms.TextBox();
             this.txtTaskLogs = new System.Windows.Forms.TextBox();
-            this.tagProgress = new System.Windows.Forms.ProgressBar();
             this.pathBrowseDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.grpProgress.SuspendLayout();
             this.SuspendLayout();
@@ -68,14 +68,23 @@
             // 
             // grpProgress
             // 
+            this.grpProgress.Controls.Add(this.txtProgress);
             this.grpProgress.Controls.Add(this.txtTaskLogs);
-            this.grpProgress.Controls.Add(this.tagProgress);
             this.grpProgress.Location = new System.Drawing.Point(13, 89);
             this.grpProgress.Name = "grpProgress";
             this.grpProgress.Size = new System.Drawing.Size(664, 360);
             this.grpProgress.TabIndex = 3;
             this.grpProgress.TabStop = false;
             this.grpProgress.Text = "Progress";
+            // 
+            // txtProgress
+            // 
+            this.txtProgress.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtProgress.Location = new System.Drawing.Point(7, 23);
+            this.txtProgress.Name = "txtProgress";
+            this.txtProgress.ReadOnly = true;
+            this.txtProgress.Size = new System.Drawing.Size(651, 13);
+            this.txtProgress.TabIndex = 3;
             // 
             // txtTaskLogs
             // 
@@ -85,13 +94,6 @@
             this.txtTaskLogs.ReadOnly = true;
             this.txtTaskLogs.Size = new System.Drawing.Size(651, 304);
             this.txtTaskLogs.TabIndex = 1;
-            // 
-            // tagProgress
-            // 
-            this.tagProgress.Location = new System.Drawing.Point(7, 20);
-            this.tagProgress.Name = "tagProgress";
-            this.tagProgress.Size = new System.Drawing.Size(651, 23);
-            this.tagProgress.TabIndex = 0;
             // 
             // pathBrowseDialog
             // 
@@ -124,9 +126,9 @@
         private System.Windows.Forms.TextBox txtPath;
         private System.Windows.Forms.Button btnBrowse;
         private System.Windows.Forms.GroupBox grpProgress;
-        private System.Windows.Forms.ProgressBar tagProgress;
         private System.Windows.Forms.FolderBrowserDialog pathBrowseDialog;
         private System.Windows.Forms.TextBox txtTaskLogs;
+        private System.Windows.Forms.TextBox txtProgress;
     }
 }
 

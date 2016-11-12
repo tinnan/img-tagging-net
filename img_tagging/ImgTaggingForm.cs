@@ -30,6 +30,8 @@ namespace img_tagging
         // Pattern to detect actress name tags.
         // starts and ends with single quote.
         private const string ACT_NAME_PATTERN = "^'.*'$";
+        // Progress text template.
+        private const string PRG_TEXT_TEMPLATE = "Tagging {0} of {1} image directory(s).";
 
         private void btnTag_Click(object sender, EventArgs e)
         {
@@ -83,13 +85,11 @@ namespace img_tagging
                     tagdir(d, taglib);
 
                     task_done++; // Increase task_done count.
-                    updateTaskProgressBar(task_done, task_count);
+                    UpdateProgressLabel(task_done, task_count);
                 }
 
                 // Write to taglib file.
                 WriteTagLib(taglib, rootPath);
-
-                Log("Job completed!");
             }
 
             End();
@@ -99,8 +99,8 @@ namespace img_tagging
         {
             // Clear the task logs.
             txtTaskLogs.Clear();
-            // Clear the progress bar.
-            tagProgress.Value = 0;
+            // Clear progress.
+            txtProgress.Clear();
             // Disable all buttons.
             btnBrowse.Enabled = false;
             btnTag.Enabled = false;
@@ -158,9 +158,15 @@ namespace img_tagging
             txtTaskLogs.AppendText(msg);
         }
 
-        private void updateTaskProgressBar(int done, int all)
+        private void UpdateProgressLabel(int done, int all)
         {
-            tagProgress.Value = (done / all) * 100;
+            string text = String.Format(PRG_TEXT_TEMPLATE, done, all);
+            if (all > 0 && done == all)
+            {
+                text += " Completed!";
+            }
+            txtProgress.Clear();
+            txtProgress.AppendText(text);
         }
 
         private bool IsAnImageFile(string filename)
