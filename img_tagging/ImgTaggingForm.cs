@@ -25,8 +25,8 @@ namespace img_tagging
         // Tags library file, stores tags and their members.
         private const string TAGS_LIBRARY_FILE = "tags.json";
         // Rexeg pattern to detect image file.
-        // JPG, PNG files.
-        private const string IMG_FILE_PATTERN = "(.*)(\\.(jpg|png))$";
+        // JPG, PNG, GIF files.
+        private const string IMG_FILE_PATTERN = "(.*)(\\.(jpg|png|gif))$";
         // Pattern to detect actress name tags.
         // starts and ends with single quote.
         private const string ACT_NAME_PATTERN = "^'.*'$";
