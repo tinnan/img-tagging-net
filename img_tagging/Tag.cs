@@ -16,8 +16,20 @@ namespace img_tagging.tag
         }
 
         public string Name { get; set; }
+        public string Type {
+            get
+            {
+                return ToTagTypeString(type_);
+            }
+            set
+            {
+                type_ = ToTagTypeEnum(value);
+            }
+        }
         public string Description { get; set; }
         public HashSet<string> Members { get; set; }
+
+        private TagType type_ = TagType.T; // Default as normal tag.
 
         public void AddMembers(params string[] members)
         {
@@ -36,6 +48,8 @@ namespace img_tagging.tag
             StringBuilder s = new StringBuilder();
             s.Append("Tag name: ")
                 .AppendLine(Name)
+                .Append("Type: ")
+                .AppendLine(Type)
                 .Append("Description: ")
                 .AppendLine(Description);
             if(Members != null)
@@ -46,5 +60,39 @@ namespace img_tagging.tag
             }
             return s.ToString();
         }
+
+        private string ToTagTypeString(TagType type)
+        {
+            return type_.ToString();
+        }
+
+        private TagType ToTagTypeEnum(string type)
+        {
+            if (TagType.S.ToString().Equals(type, System.StringComparison.InvariantCultureIgnoreCase))
+            {
+                return TagType.S;
+            } else if (TagType.A.ToString().Equals(type, System.StringComparison.InvariantCultureIgnoreCase))
+            {
+                return TagType.A;
+            }
+
+            return TagType.T; // Normal tag type as default.
+        }
+    }
+
+    public enum TagType
+    {
+        /// <summary>
+        /// Tag type: Site
+        /// </summary>
+        S,
+        /// <summary>
+        /// Tag type: Actress
+        /// </summary>
+        A, 
+        /// <summary>
+        /// Tag type: Tag
+        /// </summary>
+        T
     }
 }
