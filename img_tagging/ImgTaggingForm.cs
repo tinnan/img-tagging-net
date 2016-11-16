@@ -29,7 +29,9 @@ namespace img_tagging
         private const string IMG_FILE_PATTERN = "(.*)(\\.(jpg|png|gif))$";
         // Pattern to detect actress name tags.
         // starts and ends with single quote.
-        private const string ACT_NAME_PATTERN = "^'.*'$";
+        private const string ACT_NAME_PATTERN = "^'(.*)'$";
+        // Pattern to detect hyphen or underscore.
+        private const string ACT_NAME_JOINER_PATTERN = "-|_";
         // Progress text template.
         private const string PRG_TEXT_TEMPLATE = "Tagging {0} of {1} image directory(s).";
 
@@ -195,30 +197,40 @@ namespace img_tagging
             // 3. Add site tag to tag lib.
             taglib.AddSite(tags[0]); // first tag is always a Site.
             // 4. Add actress tag to tag lib.
-            foreach(string a in tags.ToList<string>()
-                .Where(t => { return Regex.Match(t, ACT_NAME_PATTERN).Success; })) // filter only tags that start and end with a songle quote
+            for (int i = 1; i < tags.Length; i++) 
                                                                            // a.k.a. Actress name.
             {
-                string ac = a.Replace("'", ""); // remove leading and trailing single quotes.
-                taglib.AddActress(ac);
+                Match match = Regex.Match(tags[i], ACT_NAME_PATTERN);
+                if (match.Success) // filter only tags that start and end with a single quote
+                                                                    // a.k.a. Actress name.
+                {
+                    string ac = match.Groups[1].Value; // Get Actress name (with out single quote).
+                    tags[i] = Regex.Replace(ac, ACT_NAME_JOINER_PATTERN, " "); // Replace - or _ with '1 space'
+                    taglib.AddActress(tags[i]);
+                }
             }
-
-            string[] refinedtags = RefineTagList(tags); // refine the tags. 
 
             IList<string> imgnames = new List<string>(imgs.Count());
             // 5. Write extended properties to files.
             foreach(string fpath in imgs)
             {
-                WriteTagsToFile(fpath, refinedtags);
+                WriteTagsToFile(fpath, tags);
                 // Collect file name to new list.
                 string fname = Path.GetFileName(fpath);
                 imgnames.Add(fname);
             }
             
             // 6. Add all image file names as member of every tags.
-            foreach(string tagname in refinedtags)
+            foreach(string tagname in tags)
             {
                 Tag tag = taglib.GetOrCreateTag(tagname);
+                if (taglib.Sites.Contains(tagname))
+                {
+                    tag.Type = TagType.S.ToString();
+                } else if (taglib.Actresses.Contains(tagname))
+                {
+                    tag.Type = TagType.A.ToString();
+                }
                 tag.AddMembers(imgnames.ToArray());
             }
 
@@ -232,15 +244,6 @@ namespace img_tagging
         private string[] DeriveTagList(string dir)
         {
             return dir.Split(' '); // split dir name with space char.
-        }
-
-        private string[] RefineTagList(string[] tags)
-        {
-            for(int i = 0; i < tags.Length; i++)
-            {
-                tags[i] = tags[i].Replace("'", ""); 
-            }
-            return tags;
         }
 
         private void WriteTagsToFile(string fpath, string[] tags)
