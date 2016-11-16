@@ -20,10 +20,12 @@ namespace img_tagging_test
                 .Append("\"Actresses\": [ \"ขวัญ\", \"แตงโม\" ],")
                 .Append("\"Taglist\": [{")
                 .Append("\"Name\": \"น่ารัก\",")
+                .Append("\"Type\": \"A\",")
                 .Append("\"Description\": \"Cute\",")
                 .Append("\"Members\": [ \"0132545.jpg\", \"45774124.png\" ]")
                 .Append("}, {")
                 .Append("\"Name\": \"sjsjsj\",")
+                .Append("\"Type\": \"S\",")
                 .Append("\"Description\": \"nmansd\",")
                 .Append("\"Members\": [ \"4478514_7s.jpg\", \"7064547d5.png\" ]")
                 .Append("}]")
@@ -48,6 +50,7 @@ namespace img_tagging_test
             // assert first tag set
             Tag t1 = taglist[0];
             Assert.AreEqual("น่ารัก", t1.Name);
+            Assert.AreEqual("A", t1.Type);
             Assert.AreEqual("Cute", t1.Description);
             // assert first tag set members
             Assert.IsNotNull(t1.Members);
@@ -59,6 +62,7 @@ namespace img_tagging_test
             // assert second tag set
             Tag t2 = taglist[1];
             Assert.AreEqual("sjsjsj", t2.Name);
+            Assert.AreEqual("S", t2.Type);
             Assert.AreEqual("nmansd", t2.Description);
             // assert second tag set members
             Assert.IsNotNull(t2.Members);
