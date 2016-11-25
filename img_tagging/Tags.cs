@@ -78,5 +78,16 @@ namespace img_tagging.tag
             }
             return s.ToString();
         }
+
+        /// <summary>
+        /// Merge tag(s) to destination tag, copy all their members to destination tag
+        /// and Remove themselves from tag list.
+        /// </summary>
+        /// <param name="from">Tag being renamed</param>
+        /// <param name="to">Destination tag</param>
+        public void MergeTag(string[] from, string to)
+        {
+
+        }
     }
 }
