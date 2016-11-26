@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -81,13 +82,60 @@ namespace img_tagging.tag
 
         /// <summary>
         /// Merge tag(s) to destination tag, copy all their members to destination tag
-        /// and Remove themselves from tag list.
+        /// and remove themselves from tag list.
+        /// The destination tag is created if it does not exist already.
+        /// Used in the scenario of merging and renaming tag.
+        /// Destination tag being created here is treated as normal tag (type=T).
         /// </summary>
-        /// <param name="from">Tag being renamed</param>
-        /// <param name="to">Destination tag</param>
-        public void MergeTag(string[] from, string to)
+        /// <param name="dest">Destination tag</param>
+        /// <param name="mergefrom">Tag(s) being merged</param>
+        /// <returns>Newly created tag(s), empty if none were created.</returns>
+        /// <exception cref="IllegalTagCopyTargetException">If there exist a member of <paramref name="dest"/> in <paramref name="mergefrom"/></exception>
+        public Tag[] MergeTag(string dest, params string[] mergefrom)
         {
+            ValidateCopyTarget(new string[] { dest }, mergefrom);
+            return new Tag[0];
+        }
 
+        /// <summary>
+        /// Copy all memebers of a tag to any new or existing tag(s).
+        /// New tag(s) are treated as normal tag (type=T).
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns>Newly created tag(s), empty if none were created.</returns>
+        /// <exception cref="IllegalTagCopyTargetException">If there exist a member of <paramref name="from"/> in <paramref name="to"/></exception>
+        public Tag[] CopyTag(string from, params string[] to)
+        {
+            ValidateCopyTarget(new string[] { from }, to);
+            return new Tag[0];
+        }
+
+        /// <summary>
+        /// Validate the merging/copying origins and destinations.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <exception cref="IllegalTagCopyTargetException">If there exist a member of <paramref name="from"/> in <paramref name="to"/></exception>
+        private void ValidateCopyTarget(string[] from, string[] to)
+        {
+            ISet<string> t_list = new HashSet<string>(to);
+            foreach (string f in from)
+            {
+                if (t_list.Contains(f))
+                {
+                    throw new IllegalTagCopyTargetException(f);
+                }
+            }
+        }
+    }
+
+    public class IllegalTagCopyTargetException : Exception
+    {
+        public IllegalTagCopyTargetException(string tagname) 
+            : base("Merging or copying members of the same tag is not allowed. Tag: " + tagname)
+        {
+            
         }
     }
 }
