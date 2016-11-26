@@ -27,16 +27,12 @@ namespace img_tagging.tag
             }
         }
         public string Description { get; set; }
-        public HashSet<string> Members { get; set; }
+        public HashSet<string> Members { get; set; } = new HashSet<string>();
 
         private TagType type_ = TagType.T; // Default as normal tag.
 
         public void AddMembers(params string[] members)
         {
-            if(Members == null)
-            {
-                Members = new HashSet<string>();
-            }
             foreach(string m in members)
             {
                 Members.Add(m);
