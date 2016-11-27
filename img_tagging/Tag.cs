@@ -57,12 +57,12 @@ namespace img_tagging.tag
             return s.ToString();
         }
 
-        private string ToTagTypeString(TagType type)
+        static public string ToTagTypeString(TagType type)
         {
-            return type_.ToString();
+            return type.ToString();
         }
 
-        private TagType ToTagTypeEnum(string type)
+        static public TagType ToTagTypeEnum(string type)
         {
             if (TagType.S.ToString().Equals(type, System.StringComparison.InvariantCultureIgnoreCase))
             {
