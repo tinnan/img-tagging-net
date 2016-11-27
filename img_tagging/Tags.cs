@@ -198,13 +198,16 @@ namespace img_tagging.tag
         {
             bool newTag = false;
             Tag toTag;
+
             if (_tags.ContainsKey(to))
             {
                 toTag = _tags[to];
-            } else
+            }
+            else
             {
                 newTag = true;
                 toTag = new Tag(to);
+                _tags.Add(to, toTag);
             }
 
             Tag fromTag = _tags[from];
