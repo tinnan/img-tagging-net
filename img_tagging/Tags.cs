@@ -116,7 +116,7 @@ namespace img_tagging.tag
         /// <exception cref="DuplicatedTagCopyTargetException">If there exist a member of <paramref name="from"/> in <paramref name="to"/></exception>
         public Tag[] CopyTag(string from, params string[] to)
         {
-
+            ValidateCopyTagType(from);
 
             bool copyType = false;
             bool copyDesc = false;
