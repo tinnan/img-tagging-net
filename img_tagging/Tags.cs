@@ -114,10 +114,11 @@ namespace img_tagging.tag
         /// <param name="to"></param>
         /// <returns>Newly created tag(s), empty if none were created.</returns>
         /// <exception cref="DuplicatedTagCopyTargetException">If there exist a member of <paramref name="from"/> in <paramref name="to"/></exception>
-        /// <exception cref="InvalidTagTypeException">The original tag is not of type A</exception>
+        /// <exception cref="InvalidOriginTagTypeException">The original tag is not of type A</exception>
+        /// <exception cref="InvalidTargetTagTypeException">The target tags are not of type T</exception>
         public Tag[] CopyTag(string from, params string[] to)
         {
-            ValidateCopyTagType(from);
+            ValidateCopyTagType(from, to);
 
             bool copyType = false;
             bool copyDesc = false;
@@ -275,17 +276,31 @@ namespace img_tagging.tag
         /// Validate copying origin.
         /// </summary>
         /// <param name="from"></param>
-        /// <exception cref="InvalidTagTypeException">The original tag is not of type A</exception>
-        private void ValidateCopyTagType(string from)
+        /// <exception cref="InvalidOriginTagTypeException">The original tag is not of type A</exception>
+        /// <exception cref="InvalidTargetTagTypeException">The target tag is not of type T</exception>
+        private void ValidateCopyTagType(string from, params string[] to)
         {
             if (_tags.ContainsKey(from))
             {
                 Tag tag = _tags[from];
                 if (Tag.ToTagTypeEnum(tag.Type) != TagType.A)
                 {
-                    throw new InvalidTagTypeException();
+                    throw new InvalidOriginTagTypeException();
                 }
             }
+
+            foreach (string t in to)
+            {
+                if (_tags.ContainsKey(t))
+                {
+                    Tag tag = _tags[t];
+                    if (Tag.ToTagTypeEnum(tag.Type) != TagType.T)
+                    {
+                        throw new InvalidTargetTagTypeException();
+                    }
+                }
+            }
+            
         }
 
         private string[] GetValidOrigins(params string[] uncheckedtags)
@@ -381,10 +396,19 @@ namespace img_tagging.tag
         }
     }
 
-    public class InvalidTagTypeException : Exception
+    public class InvalidOriginTagTypeException : Exception
     {
-        public InvalidTagTypeException() 
+        public InvalidOriginTagTypeException() 
             : base("Only allow original tag of type A.")
+        {
+
+        }
+    }
+
+    public class InvalidTargetTagTypeException : Exception
+    {
+        public InvalidTargetTagTypeException()
+            : base("Only allow target tag of type T.")
         {
 
         }
