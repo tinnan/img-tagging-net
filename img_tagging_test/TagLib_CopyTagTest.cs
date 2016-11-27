@@ -10,21 +10,60 @@ namespace img_tagging_test
     public class TagLib_CopyTagTest
     {
         [TestMethod]
+        public void TestCopyTag_InvalidOriginType()
+        {
+            Tags tags = GetCopyTestMockTags();
+            try
+            {
+                tags.CopyTag("Site 01", "ทดสอบ 02", "คนที่ 01", "ทดสอบ 03");
+            }
+            catch (InvalidTagTypeException e)
+            {
+                return;
+            }
+
+            Assert.Fail("Expected InvalidTagTypeException.");
+        }
+
+        [TestMethod]
         public void TestCopyTag_DuplicateOriginAndTarget()
         {
             Tags tags = GetCopyTestMockTags();
             try
             {
-                tags.CopyTag("ทดสอบ 01", "ทดสอบ 02", "ทดสอบ 01", "ทดสอบ 03");
+                tags.CopyTag("คนที่ 01", "ทดสอบ 02", "คนที่ 01", "ทดสอบ 03");
             }
             catch (DuplicatedTagCopyTargetException e)
             {
-                Assert.AreEqual("ทดสอบ 01", e.DuplicatedTag);
+                Assert.AreEqual("คนที่ 01", e.DuplicatedTag);
                 return;
             }
 
             Assert.Fail("Expected IllegalTagCopyTargetException.");
         }
+
+        [TestMethod]
+        public void TestCopyTag_NonExisitingOrigin()
+        {
+            Tags tags = GetCopyTestMockTags();
+
+            Tag[] newTags = new Tag[0];
+            try
+            {
+                newTags = tags.CopyTag("ไม่มีจริง", "ทดสอบ 02", "คนที่ 01", "ทดสอบ 03", "แท็กใหม่");
+            }
+            catch (Exception e)
+            {
+                Assert.Fail("Not expecting any exception.");
+            }
+
+            Assert.AreEqual(0, newTags.Length); // Expect no new tag.
+
+            Assert.AreEqual(GetCopyTestMockTags(), tags); // Expect no changes.
+        }
+
+        [TestMethod]
+        public void TestCopyTag_
 
         private Tags GetCopyTestMockTags()
         {
