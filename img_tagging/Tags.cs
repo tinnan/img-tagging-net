@@ -318,7 +318,7 @@ namespace img_tagging.tag
 
         public override bool Equals(object obj)
         {
-            if (!(obj is Tags))
+            if (obj == null || !(obj is Tags))
             {
                 return false;
             }
@@ -326,6 +326,34 @@ namespace img_tagging.tag
             Tags that = (Tags)obj;
 
             // compare Site list.
+            if (!EqualsSiteList(that))
+            {
+                return false;
+            }
+
+            // compare Actress list.
+            if (!EqualsActressList(that))
+            {
+                return false;
+            }
+
+            // compare Tag list.
+            if (!EqualsTagList(that))
+            {
+                return false;
+            }
+
+            // At last.
+            return true;
+        }
+
+        public bool EqualsSiteList(Tags that)
+        {
+            if (that == null)
+            {
+                return false;
+            }
+
             ISet<string> thisSites = Sites;
             ISet<string> thatSites = that.Sites;
             if (thisSites.Count != thatSites.Count)
@@ -341,7 +369,17 @@ namespace img_tagging.tag
                 }
             }
 
-            // compare Actress list.
+            // at last.
+            return true;
+        }
+
+        public bool EqualsActressList(Tags that)
+        {
+            if (that == null)
+            {
+                return false;
+            }
+
             ISet<string> thisActresses = Actresses;
             ISet<string> thatActresses = that.Actresses;
             if (thisActresses.Count != thatActresses.Count)
@@ -357,7 +395,17 @@ namespace img_tagging.tag
                 }
             }
 
-            // compare Tag list.
+            // at last.
+            return true;
+        }
+
+        public bool EqualsTagList(Tags that)
+        {
+            if (that == null)
+            {
+                return false;
+            }
+
             IList<Tag> thatTaglist = that.Taglist;
             if (thatTaglist.Count != _tags.Count)
             {
@@ -380,7 +428,7 @@ namespace img_tagging.tag
                 }
             }
 
-            // At last.
+            // at last.
             return true;
         }
     }

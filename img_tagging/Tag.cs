@@ -77,7 +77,7 @@ namespace img_tagging.tag
 
         public override bool Equals(object obj)
         {
-            if (!(obj is Tag))
+            if (obj == null || !(obj is Tag))
             {
                 return false;
             }
@@ -85,30 +85,91 @@ namespace img_tagging.tag
             Tag that = (Tag)obj;
 
             // Compare Tag name.
+            if (!EqualsName(that))
+            {
+                return false;
+            }
+
+            // Compare Tag type.
+            if (!EqualsType(that))
+            {
+                return false;
+            }
+
+            // Compare Tag description.
+            if (!EqualsDescription(that))
+            {
+                return false;
+            }
+            
+            // Compare Members.
+            if (!EqualsMembers(that))
+            {
+                return false;
+            }
+
+            // At last.
+            return true;
+        }
+
+        public bool EqualsName(Tag that)
+        {
+            if (that == null)
+            {
+                return false;
+            }
+
             string thisName = Name;
             string thatName = that.Name;
             if (!string.Equals(thisName, thatName))
             {
                 return false;
             }
+            // At last.
+            return true;
+        }
 
-            // Compare Tag type.
+        public bool EqualsType(Tag that)
+        {
+            if (that == null)
+            {
+                return false;
+            }
+
             string thisType = Type;
             string thatType = that.Type;
             if (!string.Equals(thisType, thatType))
             {
                 return false;
             }
+            // At last.
+            return true;
+        }
 
-            // Compare Tag description.
+        public bool EqualsDescription(Tag that)
+        {
+            if (that == null)
+            {
+                return false;
+            }
+
             string thisDesc = Description;
             string thatDesc = that.Description;
             if (!string.Equals(thisDesc, thatDesc))
             {
                 return false;
             }
+            // At last.
+            return true;
+        }
 
-            // Compare Members.
+        public bool EqualsMembers(Tag that)
+        {
+            if (that == null)
+            {
+                return false;
+            }
+
             ISet<string> thisMembers = Members;
             ISet<string> thatMembers = that.Members;
             if (thisMembers.Count != thatMembers.Count)
@@ -123,7 +184,6 @@ namespace img_tagging.tag
                     return false;
                 }
             }
-
             // At last.
             return true;
         }
