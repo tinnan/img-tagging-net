@@ -114,6 +114,7 @@ namespace img_tagging.tag
         /// <param name="to"></param>
         /// <returns>Newly created tag(s), empty if none were created.</returns>
         /// <exception cref="DuplicatedTagCopyTargetException">If there exist a member of <paramref name="from"/> in <paramref name="to"/></exception>
+        /// <exception cref="InvalidTagTypeException">The original tag is not of type A</exception>
         public Tag[] CopyTag(string from, params string[] to)
         {
             ValidateCopyTagType(from);
