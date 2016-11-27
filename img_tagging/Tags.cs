@@ -108,6 +108,7 @@ namespace img_tagging.tag
         /// Copy all memebers of a tag to any new or existing tag(s).
         /// New tag(s) are treated as normal tag (type=T).
         /// Origin tag that does not actually exist is ignored.
+        /// Allow to operate on original tag of type A only.
         /// </summary>
         /// <param name="from"></param>
         /// <param name="to"></param>
@@ -115,6 +116,8 @@ namespace img_tagging.tag
         /// <exception cref="DuplicatedTagCopyTargetException">If there exist a member of <paramref name="from"/> in <paramref name="to"/></exception>
         public Tag[] CopyTag(string from, params string[] to)
         {
+
+
             bool copyType = false;
             bool copyDesc = false;
 
@@ -124,18 +127,16 @@ namespace img_tagging.tag
         }
 
         /// <summary>
-        /// Rename an existing tag. New tag name must not exist in the tag list.
+        /// Rename an existing tag to a new or an existing tag name. 
+        /// New tag is created with same type and description as it origin.
         /// Origin tag that does not actually exist is ignored.
         /// </summary>
         /// <param name="from">Tag to be renamed</param>
         /// <param name="to">New tag name</param>
         /// <returns>New tag instance, <code>null</code> if none were created</returns>
-        /// <exception cref="UnexistTagRenameException">If <paramref name="from"/> does not exist in tag list</exception>
         /// <exception cref="DuplicatedTagCopyTargetException">If <paramref name="from"/> and <paramref name="to"/> are the same</exception>
         public Tag RenameTag(string from, string to)
         {
-            ValidateRenameOrigin(from);
-
             bool copyType = true;
             bool copyDesc = true;
 
@@ -207,15 +208,16 @@ namespace img_tagging.tag
             Tag fromTag = _tags[from];
 
             toTag.AddMembers(fromTag.Members.ToArray());
-            if (copyType)
+            if (newTag)
             {
-                string type = fromTag.Type;
-                toTag.Type = type;
-
-                // If it is a new tag, 
-                // consider adding it to Site list or Actress list too.
-                if (newTag)
+                if (copyType)
                 {
+                    string type = fromTag.Type;
+                    toTag.Type = type;
+
+                    // If it is a new tag, 
+                    // consider adding it to Site list or Actress list too.
+
                     switch (Tag.ToTagTypeEnum(type))
                     {
                         case TagType.S:
@@ -227,14 +229,15 @@ namespace img_tagging.tag
                         default:
                             break;
                     }
+
+                }
+
+                if (copyDesc)
+                {
+                    toTag.Description = fromTag.Description;
                 }
             }
 
-            if (copyDesc)
-            {
-                toTag.Description = fromTag.Description;
-            }
-            
             return newTag ? toTag : null;
         }
 
@@ -268,15 +271,19 @@ namespace img_tagging.tag
         }
 
         /// <summary>
-        /// Validate renameing origin.
+        /// Validate copying origin.
         /// </summary>
         /// <param name="from"></param>
-        /// <exception cref="UnexistTagRenameException">If original tag does not exist in tag list</exception>
-        private void ValidateRenameOrigin(string from)
+        /// <exception cref="InvalidTagTypeException">The original tag is not of type A</exception>
+        private void ValidateCopyTagType(string from)
         {
-            if (!_tags.ContainsKey(from))
+            if (_tags.ContainsKey(from))
             {
-                throw new UnexistTagRenameException(from);
+                Tag tag = _tags[from];
+                if (Tag.ToTagTypeEnum(tag.Type) != TagType.A)
+                {
+                    throw new InvalidTagTypeException();
+                }
             }
         }
 
@@ -305,14 +312,12 @@ namespace img_tagging.tag
         }
     }
 
-    public class UnexistTagRenameException : Exception
+    public class InvalidTagTypeException : Exception
     {
-        public string UnexistTag { get; set; }
-
-        public UnexistTagRenameException(string tagname) 
-            : base("Renaming error: original tag [" + tagname + "] does not exist in tag list.")
+        public InvalidTagTypeException() 
+            : base("Only allow original tag of type A.")
         {
-            UnexistTag = tagname;
+
         }
     }
 }
