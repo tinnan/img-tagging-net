@@ -74,59 +74,6 @@ namespace img_tagging.tag
 
             return TagType.T; // Normal tag type as default.
         }
-
-        public override bool Equals(object obj)
-        {
-            if (!(obj is Tag))
-            {
-                return false;
-            }
-
-            Tag that = (Tag)obj;
-
-            // Compare Tag name.
-            string thisName = Name;
-            string thatName = that.Name;
-            if (!string.Equals(thisName, thatName))
-            {
-                return false;
-            }
-
-            // Compare Tag type.
-            string thisType = Type;
-            string thatType = that.Type;
-            if (!string.Equals(thisType, thatType))
-            {
-                return false;
-            }
-
-            // Compare Tag description.
-            string thisDesc = Description;
-            string thatDesc = that.Description;
-            if (!string.Equals(thisDesc, thatDesc))
-            {
-                return false;
-            }
-
-            // Compare Members.
-            ISet<string> thisMembers = Members;
-            ISet<string> thatMembers = that.Members;
-            if (thisMembers.Count != thatMembers.Count)
-            {
-                return false;
-            }
-
-            foreach (string m in thisMembers)
-            {
-                if (!thatMembers.Contains(m))
-                {
-                    return false;
-                }
-            }
-
-            // At last.
-            return true;
-        }
     }
 
     public enum TagType
