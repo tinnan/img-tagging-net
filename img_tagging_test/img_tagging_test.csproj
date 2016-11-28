@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="TagLibLoadingTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TagLibTestUtils.cs" />
     <Compile Include="TagLib_CopyTagTest.cs" />
   </ItemGroup>
   <ItemGroup>
