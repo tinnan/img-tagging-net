@@ -75,6 +75,11 @@ namespace img_tagging.tag
             return t;
         }
 
+        public bool ContainsTag(string tagName)
+        {
+            return _tags.ContainsKey(tagName);
+        }
+
         public override string ToString()
         {
             StringBuilder s = new StringBuilder();
@@ -150,7 +155,7 @@ namespace img_tagging.tag
             Tag[] newTags = CopyTag(new string[] { from }, new string[] { to }, copyType, copyDesc);
 
             // remove original tag.
-            RemoveTags(new string[] { from });
+            RemoveTags(from);
 
             return newTags.Length == 0 ? null : newTags[0];
         }

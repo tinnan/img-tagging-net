@@ -61,6 +61,7 @@
     <Compile Include="TagLibTestUtils.cs" />
     <Compile Include="TagLib_CopyTagTest.cs" />
     <Compile Include="TagLib_RemoveTagTest.cs" />
+    <Compile Include="TagLib_RenameTagTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\img_tagging\img_tagging.csproj">
