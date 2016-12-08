@@ -42,6 +42,11 @@ namespace img_tagging.tag
             return _tags.Count;
         }
 
+        public string[] GetTagNames()
+        {
+            return _tags.Keys.ToArray();
+        }
+
         public bool AddSite(string site)
         {
             return Sites.Add(site);
@@ -246,13 +251,28 @@ namespace img_tagging.tag
             return newTag ? toTag : null;
         }
 
-        private void RemoveTags(params string[] tags)
+        /// <summary>
+        /// Remove specified tags from tag list. 
+        /// And if they exist in site list or actress list, remove them from the list too.
+        /// </summary>
+        /// <param name="tags">Tags to be removed</param>
+        public void RemoveTags(params string[] tags)
         {
-            foreach (string t in tags)
+            foreach (string tagName in tags)
             {
-                if (_tags.ContainsKey(t))
+                if (_tags.ContainsKey(tagName))
                 {
-                    _tags.Remove(t);
+                    _tags.Remove(tagName);
+                }
+
+                if (Sites.Contains(tagName))
+                {
+                    Sites.Remove(tagName);
+                }
+
+                if (Actresses.Contains(tagName))
+                {
+                    Actresses.Remove(tagName);
                 }
             }
         }

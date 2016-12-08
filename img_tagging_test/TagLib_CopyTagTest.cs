@@ -11,7 +11,7 @@ namespace img_tagging_test
     public class TagLib_CopyTagTest
     {
         [TestMethod]
-        public void TestCopyTag_InvalidOriginType()
+        public void TestCopyTag_InvalidOriginType_InvalidOriginTagException()
         {
             Tags tags = GetCopyTestMockTags();
             try
@@ -27,7 +27,7 @@ namespace img_tagging_test
         }
 
         [TestMethod]
-        public void TestCopyTag_InvalidTargetType()
+        public void TestCopyTag_InvalidTargetType_InvalidTagTypeException()
         {
             Tags tags = GetCopyTestMockTags();
             try
@@ -43,7 +43,7 @@ namespace img_tagging_test
         }
         
         [TestMethod]
-        public void TestCopyTag_DuplicateOriginAndTarget()
+        public void TestCopyTag_DuplicateOriginAndTarget_DuplicatedTagCopyException()
         {
             Tags tags = GetCopyTestMockTags();
             try
@@ -60,7 +60,7 @@ namespace img_tagging_test
         }
 
         [TestMethod]
-        public void TestCopyTag_NonExisitingOrigin()
+        public void TestCopyTag_NonExisitingOrigin_NoChangeInTagsInstance()
         {
             Tags tags = GetCopyTestMockTags();
 
@@ -80,7 +80,7 @@ namespace img_tagging_test
         }
 
         [TestMethod]
-        public void TestCopyTag_CopyToExistingTag()
+        public void TestCopyTag_CopyToExistingTag_TagInfoCopiedToExistingTag()
         {
             Tags tags = GetCopyTestMockTags();
 
@@ -152,7 +152,7 @@ namespace img_tagging_test
         }
 
         [TestMethod]
-        public void TestCopyTag_CopyToNewTag()
+        public void TestCopyTag_CopyToNewTag_NewTagIsCreated()
         {
             Tags tags = GetCopyTestMockTags();
 
