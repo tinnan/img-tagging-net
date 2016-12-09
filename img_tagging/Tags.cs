@@ -99,9 +99,9 @@ namespace img_tagging.tag
         /// </summary>
         /// <param name="dest">Destination tag</param>
         /// <param name="mergefrom">Tag(s) being merged</param>
-        /// <returns>Newly created tag(s), empty if none were created.</returns>
+        /// <returns>Newly created tag, <code>null</code> if none were created.</returns>
         /// <exception cref="DuplicatedTagCopyTargetException">If there exist a member of <paramref name="dest"/> in <paramref name="mergefrom"/></exception>
-        public Tag[] MergeTag(string dest, params string[] mergefrom)
+        public Tag MergeTag(string dest, params string[] mergefrom)
         {
             bool copyType = false;
             bool copyDesc = false;
@@ -111,7 +111,7 @@ namespace img_tagging.tag
             // Remove origin tags from tag list.
             RemoveTags(mergefrom);
 
-            return newTags;
+            return newTags.Length == 0 ? null : newTags[0];
         }
 
         /// <summary>
